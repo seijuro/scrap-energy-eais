@@ -102,7 +102,7 @@ public class DownloadHistoryRecord {
          * @throws IllegalArgumentException
          */
         @SuppressWarnings("unused")
-        public Builder setEnergyType(String $type) throws IllegalArgumentException {
+        public Builder setType(String $type) throws IllegalArgumentException {
             for (EnergyType type : EnergyType.values()) {
                 if (type.toString().equalsIgnoreCase($type)) {
                     this.type = type;

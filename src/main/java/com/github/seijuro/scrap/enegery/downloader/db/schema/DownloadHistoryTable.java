@@ -14,7 +14,7 @@ public class DownloadHistoryTable {
         FILE_ID("fid"),
         FILE_TYPE("type"),
         DATE_YM("ym"),
-        FILE_PATH("filepath"),
+        FILEPATH("filepath"),
         STATUS("status"),
         LAStUPDATE("lastupdate");
 
