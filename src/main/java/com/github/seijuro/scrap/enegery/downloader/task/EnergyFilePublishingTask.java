@@ -36,7 +36,7 @@ public class EnergyFilePublishingTask extends Thread {
     public static final String Tag = "[THREAD/CHECKER#NEW]";
     private static Pattern DatePattern = Pattern.compile("[0-9]+\\.[0-9]+");
 
-    public static final long DefaultLoopSleepMillis = 2 * DateUtils.MILLIS_PER_MINUTE;
+    public static final long DefaultLoopSleepMillis = 10 * DateUtils.MILLIS_PER_MINUTE;
     public static final long DefaultClickSleepMillis = 3 * DateUtils.MILLIS_PER_SECOND;
 
     /**
@@ -294,7 +294,7 @@ public class EnergyFilePublishingTask extends Thread {
             throws IllegalArgumentException, MalformedURLException {
         if (StringUtils.isEmpty($hubURL) ||
                 StringUtils.isEmpty($requestURL)) {
-            throw new IllegalArgumentException(String.format("Parameters, url(s), is an empty string ... (hubURL : %s, browser : %s, requestURL : %s)", $hubURL, $requestURL));
+            throw new IllegalArgumentException(String.format("Parameters, url(s), is an empty string ... (hubURL : %s, browser : %s, requestURL : %s)", $hubURL, $browser, $requestURL));
         }
 
         this.hubURL = new URL($hubURL);

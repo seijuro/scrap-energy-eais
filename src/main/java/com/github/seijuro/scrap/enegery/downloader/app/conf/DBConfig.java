@@ -39,8 +39,7 @@ public enum DBConfig implements Config{
      * Class Instance.
      */
     private static final Logger LOG = LoggerFactory.getLogger(DBConfig.class);
-    @Getter
-    private static final String FileName = "db.conf";
+    private static final String Tag = "[CONFIG/DB]";
 
     /**
      *
@@ -66,16 +65,18 @@ public enum DBConfig implements Config{
             Map<Config, String> ret = new HashMap<>();
 
             while ((line = br.readLine()) != null) {
-                Object[] parsed = ConfigLineParser.parse(line);
+                Object[] parsed = ConfigLineParser.parse(line, DBConfig.values());
 
                 if (Objects.nonNull(parsed) &&
                         parsed.length == 2) {
                     //  Log
-                    LOG.debug("[DB/CONF] line : {} => {}, {}", line, parsed[0], parsed[1]);
+                    LOG.debug("{} intput : [{}] ... {} => {}", Tag, line, parsed[0], parsed[1]);
 
                     ret.put(DBConfig.class.cast(parsed[0]), String.class.cast(parsed[1]));
                 }
             }
+
+            br.close();
 
             return ret;
         }

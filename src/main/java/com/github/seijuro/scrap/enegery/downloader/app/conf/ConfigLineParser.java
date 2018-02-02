@@ -7,7 +7,7 @@ import java.util.Objects;
 public class ConfigLineParser {
     private static final String AssignementOpr = "=";
 
-    static Object[] parse(String line) {
+    static Object[] parse(String line, Config[] configs) {
         if (Objects.nonNull(line)) {
             String[] tokens = line.split(AssignementOpr, 2);
 
@@ -15,7 +15,7 @@ public class ConfigLineParser {
                 String key = StringUtils.strip(tokens[0]);
                 String value = StringUtils.strip(tokens[1]);
 
-                for (DBConfig conf : DBConfig.values()) {
+                for (Config conf : configs) {
                     if (conf.getName().equalsIgnoreCase(key)) {
                         return new Object[] {conf, value};
                     }

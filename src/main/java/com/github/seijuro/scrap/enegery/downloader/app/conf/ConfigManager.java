@@ -54,6 +54,7 @@ public class ConfigManager {
      */
     private void clear() {
         this.dbConfigs = null;
+        this.appConfigs = null;
         this.appOptions = null;
     }
 
@@ -340,6 +341,8 @@ public class ConfigManager {
                     String appConfigFilepath = String.format("%s%s%s", confPath, confPath.endsWith(File.separator) ? "" : File.separator, AppConfigFilename);
                     this.appConfigs = AppConfig.parse(appConfigFilepath);
                 }
+
+                this.initialized = true;
             }
 
             return true;

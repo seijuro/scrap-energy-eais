@@ -4,6 +4,7 @@ import com.github.seijuro.common.http.HttpRequestHelper;
 import com.github.seijuro.common.http.RequestMethod;
 import com.github.seijuro.scrap.enegery.downloader.app.EnergyFileEvent;
 import com.github.seijuro.scrap.enegery.downloader.app.EnergyFileEventSubscriber;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -109,6 +110,7 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
     /**
      * Instance Properties
      */
+    @Getter(AccessLevel.PROTECTED)
     private final String downloadDirectory;
 
     /**
@@ -121,9 +123,8 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
             throw new IllegalArgumentException("Parameter, $param, is an empty string.");
         }
 
-        this.downloadDirectory = $path;
+        this.downloadDirectory = $path.endsWith(File.separator) ? $path : String.format("%s%s", $path, File.separator);
     }
-
 
     /**
      * handle event.
@@ -134,7 +135,6 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
         if (Objects.nonNull(event) &&
                 Objects.nonNull(event.getType())) {
             //  TODO check whether already download file mentionsed in event or not.
-
             if ((event.getYear() * 100 + event.getMonth()) < 201710) {
                 return;
             }
@@ -192,7 +192,7 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
                     }
 
                     InputStream is = httpConn.getInputStream();
-                    String destFilepath = "/Users/myungjoonlee/Desktop/" + filename;
+                    String destFilepath = getDownloadDirectory() + filename;
 
                     FileOutputStream fos = new FileOutputStream(destFilepath);
 
@@ -227,7 +227,7 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
     }
 
     /**
-     * Implement <code>Thead</code> interface.
+     * Implement <code>Runnable</code> interface.
      */
     @Override
     public void run() {
@@ -247,7 +247,6 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
 
                 Thread.sleep(this.threadSleepMillis);
             } while (true);
-
         }
         catch (InterruptedException excp) {
             excp.printStackTrace();

@@ -38,6 +38,7 @@ public enum AppConfig implements Config {
      * Class Instance
      */
     private static Logger LOG = LoggerFactory.getLogger(AppConfig.class);
+    private static String Tag = "[CONFIG/APP]";
 
     /**
      *
@@ -52,6 +53,8 @@ public enum AppConfig implements Config {
             throw new IllegalArgumentException("Parameter, path, is null.");
         }
 
+        LOG.debug("{} path : {}", Tag, path);
+
         Path configPath = Paths.get(path);
 
         //  check param #2
@@ -62,16 +65,18 @@ public enum AppConfig implements Config {
             Map<Config, String> ret = new HashMap<>();
 
             while ((line = br.readLine()) != null) {
-                Object[] parsed = ConfigLineParser.parse(line);
+                Object[] parsed = ConfigLineParser.parse(line, AppConfig.values());
 
                 if (Objects.nonNull(parsed) &&
                         parsed.length == 2) {
                     //  Log
-                    LOG.debug("[DB/CONF] line : {} => {}, {}", line, parsed[0], parsed[1]);
+                    LOG.debug("{} intput : [{}] ... {} => {}", Tag, line, parsed[0], parsed[1]);
 
-                    ret.put(DBConfig.class.cast(parsed[0]), String.class.cast(parsed[1]));
+                    ret.put(AppConfig.class.cast(parsed[0]), String.class.cast(parsed[1]));
                 }
             }
+
+            br.close();
 
             return ret;
         }
