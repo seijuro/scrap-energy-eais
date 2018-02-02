@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration status="DEBUG">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} = %msg%n" />
+        </Console>
+
+        <File name="LogFile" fileName="/tmp/public-data-scraper-test.log" immediateFlush="true" append="false">
+            <PAtternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} = %msg%n" />
+        </File>
+    </appenders>
+
+    <loggers>
+        <root level="DEBUG">
+            <appender-ref ref="Console" level="debug" />
+            <appender-ref ref="LogFile" level="debug" />
+        </root>
+    </loggers>
+
+</configuration>
