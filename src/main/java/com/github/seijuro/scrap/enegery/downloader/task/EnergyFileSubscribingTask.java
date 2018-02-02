@@ -107,6 +107,25 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
     }
 
     /**
+     * Instance Properties
+     */
+    private final String downloadDirectory;
+
+    /**
+     * C'tor
+     *
+     * @param $path
+     */
+    public EnergyFileSubscribingTask(String $path) throws IllegalArgumentException {
+        if (StringUtils.isEmpty($path)) {
+            throw new IllegalArgumentException("Parameter, $param, is an empty string.");
+        }
+
+        this.downloadDirectory = $path;
+    }
+
+
+    /**
      * handle event.
      *
      * @param event

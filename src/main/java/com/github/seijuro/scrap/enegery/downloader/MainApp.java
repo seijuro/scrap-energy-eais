@@ -29,11 +29,12 @@ public class MainApp {
 
             String seleniumServerURL = confManager.getSeleniumHubURL();
             String browser = confManager.getBrowserType();
+            String downDirectory = confManager.getDownloadDirecotry();
 
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
             Thread fileChecker = new EnergyFilePublishingTask(seleniumServerURL, browser, EnergyFileSiteURL);
-            EnergyFileSubscribingTask subscriber = new EnergyFileSubscribingTask();
+            EnergyFileSubscribingTask subscriber = new EnergyFileSubscribingTask(downDirectory);
 
             EnergyFilePublisher.getInstance().add(subscriber);
 
