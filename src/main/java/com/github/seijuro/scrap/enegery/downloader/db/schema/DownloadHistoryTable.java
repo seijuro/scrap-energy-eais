@@ -1,6 +1,5 @@
 package com.github.seijuro.scrap.enegery.downloader.db.schema;
 
-import com.github.seijuro.scrap.enegery.downloader.db.Column;
 import lombok.Getter;
 
 public class DownloadHistoryTable {

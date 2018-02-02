@@ -1,6 +1,6 @@
 package com.github.seijuro.scrap.enegery.downloader.db;
 
-public class EnergyDownloaderDBController extends MySQLDBController {
+public class AppDBController extends MySQLDBController {
     /**
      * create method to instantiate controller.
      *
@@ -10,8 +10,8 @@ public class EnergyDownloaderDBController extends MySQLDBController {
      * @param $database
      * @return
      */
-    public static EnergyDownloaderDBController create(String $host, String $user, String $passwd, String $database) {
-        return new EnergyDownloaderDBController($host, null, $user, $passwd, $database);
+    public static AppDBController create(String $host, String $user, String $passwd, String $database) {
+        return new AppDBController($host, null, $user, $passwd, $database);
     }
 
     /**
@@ -22,7 +22,7 @@ public class EnergyDownloaderDBController extends MySQLDBController {
      * @param $passwd
      * @param $database
      */
-    protected EnergyDownloaderDBController(String $host, String $port, String $user, String $passwd, String $database) {
+    protected AppDBController(String $host, String $port, String $user, String $passwd, String $database) {
         super($host, $port, $user, $passwd, $database);
     }
 
