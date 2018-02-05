@@ -23,8 +23,6 @@ public class EnergyFileEventSubscriber implements Observer<EnergyFileEvent> {
      * Instance Properties
      */
     protected Queue<EnergyFileEvent> eventQueue = new LinkedList<>();
-    @Setter(AccessLevel.PUBLIC)
-    protected long threadSleepMillis = DefaultThreadSleepMillis;
 
     @Override
     public void update() {

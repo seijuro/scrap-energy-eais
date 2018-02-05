@@ -17,7 +17,9 @@ import java.util.Objects;
 
 public enum AppConfig implements Config {
     HUB_URL("hub.url"),
-    BROWSER("browser");
+    BROWSER("browser"),
+    PUBLISHING_MILLIS("publishing.millis"),
+    SUBSCRIBING_MILLIS("subscribing.millis");
 
     /**
      * Instance Properties

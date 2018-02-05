@@ -1,4 +1,4 @@
-package com.github.seijuro.scrap.enegery.downloader.db;
+package com.github.seijuro.scrap.enegery.downloader.db.ctrl;
 
 import com.github.seijuro.scrap.enegery.downloader.app.EnergyType;
 import com.github.seijuro.scrap.enegery.downloader.db.record.DownloadHistoryRecord;
@@ -12,8 +12,8 @@ import java.util.Objects;
 /**
  * Grouping all helper interfaces related to 'DownloadHistory'.
  */
-class DownloadHistoryHelper {
-    static final Logger LOG = LoggerFactory.getLogger(DownloadHistoryHelper.class);
+class DownloadHistoryController {
+    static final Logger LOG = LoggerFactory.getLogger(DownloadHistoryController.class);
 
     /**
      * DML(s)

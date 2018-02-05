@@ -1,4 +1,4 @@
-package com.github.seijuro.scrap.enegery.downloader.db;
+package com.github.seijuro.scrap.enegery.downloader.db.ctrl;
 
 import com.github.seijuro.scrap.enegery.downloader.app.EnergyType;
 import com.github.seijuro.scrap.enegery.downloader.db.record.DownloadHistoryRecord;
@@ -41,7 +41,7 @@ public class AppDBController extends MySQLDBController {
     public DownloadHistoryRecord getLatestElectrocityFile() throws SQLException {
         assert Objects.nonNull(this.conn);
 
-        return DownloadHistoryHelper.DML.selectLatestElectrocityFileFromDownloadHistory(this.conn);
+        return DownloadHistoryController.DML.selectLatestElectrocityFileFromDownloadHistory(this.conn);
     }
 
     /**
@@ -53,13 +53,13 @@ public class AppDBController extends MySQLDBController {
     public DownloadHistoryRecord getLatestGasFile() throws SQLException {
         assert Objects.nonNull(this.conn);
 
-        return DownloadHistoryHelper.DML.selectLatestGasFileFromDownloadHistory(this.conn);
+        return DownloadHistoryController.DML.selectLatestGasFileFromDownloadHistory(this.conn);
     }
 
     public DownloadHistoryRecord getEnergyFileWhoseDateYMIs(EnergyType $type, int $dateYM) throws SQLException {
         assert Objects.nonNull(this.conn);
 
-        return DownloadHistoryHelper.DML.selectEnergyFileWhoseTypeAndDateYMIs(this.conn, $type, $dateYM);
+        return DownloadHistoryController.DML.selectEnergyFileWhoseTypeAndDateYMIs(this.conn, $type, $dateYM);
     }
 
     /**
@@ -75,7 +75,7 @@ public class AppDBController extends MySQLDBController {
     public int upsertEnergyFile(String $fileId, EnergyType $type, int dateYM, String $path) throws SQLException {
         assert Objects.nonNull(this.conn);
 
-        return DownloadHistoryHelper.DML.upsertEnergyFile(this.conn, $fileId, $type, dateYM, $path);
+        return DownloadHistoryController.DML.upsertEnergyFile(this.conn, $fileId, $type, dateYM, $path);
     }
 
     /**
@@ -89,6 +89,6 @@ public class AppDBController extends MySQLDBController {
     public int updateEnergyFileStatus(String $fileId, int $status) throws SQLException {
         assert Objects.nonNull(this.conn);
 
-        return DownloadHistoryHelper.DML.updateEnergyFileStatus(this.conn, $fileId, $status);
+        return DownloadHistoryController.DML.updateEnergyFileStatus(this.conn, $fileId, $status);
     }
 }

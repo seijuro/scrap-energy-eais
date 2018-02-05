@@ -30,11 +30,20 @@ public class MainApp {
             String seleniumServerURL = confManager.getSeleniumHubURL();
             String browser = confManager.getBrowserType();
             String downDirectory = confManager.getDownloadDirecotry();
+            long publishingMillis = confManager.getPublishingMillis();
+            long subscribingMillis = confManager.getSubscribingMillis();
+
+            //  Log(s)
+            LOG.debug("publishing sleep millis : {}", publishingMillis);
+            LOG.debug("subscribing sleep millis : {}", subscribingMillis);
 
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
-            Thread fileChecker = new EnergyFilePublishingTask(seleniumServerURL, browser, EnergyFileSiteURL);
+            EnergyFilePublishingTask publisher = new EnergyFilePublishingTask(seleniumServerURL, browser, EnergyFileSiteURL);
             EnergyFileSubscribingTask subscriber = new EnergyFileSubscribingTask(downDirectory);
+
+            publisher.setLoopSleepMillis(publishingMillis);
+            subscriber.setLooopSleepMillis(subscribingMillis);
 
             EnergyFilePublisher.getInstance().add(subscriber);
 
@@ -42,7 +51,7 @@ public class MainApp {
             {
                 List<CompletableFuture<?>> futures = new ArrayList<>();
 
-                futures.add(CompletableFuture.runAsync(fileChecker, executor));
+                futures.add(CompletableFuture.runAsync(publisher, executor));
                 futures.add(CompletableFuture.runAsync(subscriber, executor));
 
                 for (CompletableFuture<?> future : futures) {

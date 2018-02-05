@@ -22,6 +22,8 @@ public class ConfigManager {
     static final String DefaultDownloadDirectoryName = "download";
     static final String AppConfigFilename = "app.conf";
     static final String DatabaseConfigFilename = "db.conf";
+    static final long DefaultPublishingMillis = 3600000;
+    static final long DefaultSubscribingMillis = 300000;
 
     /**
      * Singleton Instance
@@ -304,6 +306,56 @@ public class ConfigManager {
         }
 
         return browser;
+    }
+
+    /**
+     * retrieve millis for publishing task(thread)
+     *
+     * @return
+     * @throws NotInitializedException
+     */
+    public long getPublishingMillis() throws NotInitializedException {
+        throwExceptionIfNotInitialized();
+
+        assert Objects.nonNull(this.appConfigs);
+
+        try {
+            String value = this.appConfigs.get(AppConfig.PUBLISHING_MILLIS);
+
+            if (StringUtils.isNotEmpty(value)) {
+                Long.parseLong(value);
+            }
+        }
+        catch (NumberFormatException excp) {
+            excp.printStackTrace();
+        }
+
+        return DefaultPublishingMillis;
+    }
+
+    /**
+     * retrieve millis for subscribing task(thread)
+     *
+     * @return
+     * @throws NotInitializedException
+     */
+    public long getSubscribingMillis() throws NotInitializedException {
+        throwExceptionIfNotInitialized();
+
+        assert Objects.nonNull(this.appConfigs);
+
+        try {
+            String value = this.appConfigs.get(AppConfig.SUBSCRIBING_MILLIS);
+
+            if (StringUtils.isNotEmpty(value)) {
+                Long.parseLong(value);
+            }
+        }
+        catch (NumberFormatException excp) {
+            excp.printStackTrace();
+        }
+
+        return DefaultSubscribingMillis;
     }
 
 

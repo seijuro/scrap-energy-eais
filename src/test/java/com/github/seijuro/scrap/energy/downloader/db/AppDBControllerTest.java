@@ -1,6 +1,6 @@
 package com.github.seijuro.scrap.energy.downloader.db;
 
-import com.github.seijuro.scrap.enegery.downloader.db.AppDBController;
+import com.github.seijuro.scrap.enegery.downloader.db.ctrl.AppDBController;
 import com.github.seijuro.scrap.enegery.downloader.db.record.DownloadHistoryRecord;
 import org.junit.Assert;
 import org.junit.Test;

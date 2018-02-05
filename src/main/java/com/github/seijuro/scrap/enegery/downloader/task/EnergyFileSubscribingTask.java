@@ -7,10 +7,11 @@ import com.github.seijuro.scrap.enegery.downloader.app.EnergyFileEventSubscriber
 import com.github.seijuro.scrap.enegery.downloader.app.EnergyType;
 import com.github.seijuro.scrap.enegery.downloader.app.conf.ConfigManager;
 import com.github.seijuro.scrap.enegery.downloader.app.conf.NotInitializedException;
-import com.github.seijuro.scrap.enegery.downloader.db.AppDBController;
+import com.github.seijuro.scrap.enegery.downloader.db.ctrl.AppDBController;
 import com.github.seijuro.scrap.enegery.downloader.db.record.DownloadHistoryRecord;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -33,6 +34,8 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
 
     private static final String RequestURL = "http://open.eais.go.kr/opnsvc/opnOpenInfoDownload.do";
     private static final String Referer = "http://open.eais.go.kr/opnsvc/opnSvcOpenInfoView.do";
+
+    private static final long DefaultThreadSleepMillis = 120L * DateUtils.MILLIS_PER_SECOND;
 
     /**
      * Request Post Parameter(s)
@@ -118,6 +121,8 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
      */
     @Getter(AccessLevel.PROTECTED)
     private final String downloadDirectory;
+    @Setter
+    private long looopSleepMillis = DefaultThreadSleepMillis;
 
     /**
      * C'tor
@@ -369,9 +374,9 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
                 }
 
                 //  Log
-                LOG.debug("{} loop ... sleep : {}", Tag, this.threadSleepMillis);
+                LOG.debug("{} loop ... sleep : {}", Tag, this.looopSleepMillis);
 
-                Thread.sleep(this.threadSleepMillis);
+                Thread.sleep(this.looopSleepMillis);
             } while (true);
         }
         catch (NotInitializedException niexcp) {

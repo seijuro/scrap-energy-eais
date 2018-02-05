@@ -1,7 +1,5 @@
-package com.github.seijuro.scrap.enegery.downloader.db;
+package com.github.seijuro.scrap.enegery.downloader.db.ctrl;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -10,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Objects;
 
 public class MySQLDBController {
