@@ -25,7 +25,7 @@ class DownloadHistoryHelper {
         private static final String UpdateEnergyRecordStatus;
 
         static {
-            //  SQL #1 : Select the lastest Energy
+            //  SQL #1 : select latest download history record
             {
                 StringBuffer query = new StringBuffer("SELECT ");
                 query
@@ -43,6 +43,7 @@ class DownloadHistoryHelper {
                 SelectLatesetEnergyRecord = query.toString();
             }
 
+            //  SQL #2 : Select download history record whose type & date is
             {
                 StringBuffer query = new StringBuffer("SELECT ");
                 query
@@ -60,7 +61,7 @@ class DownloadHistoryHelper {
                 SelectEnergyRecrodWhoseTypeAndYM = query.toString();
             }
 
-            //  SQL #2 : Upsert energy record.
+            //  SQL #3 : Upsert energy record.
             {
                 StringBuffer query = new StringBuffer("INSERT INTO ");
 
@@ -78,7 +79,7 @@ class DownloadHistoryHelper {
                 UpsertNewEnergyRecord = query.toString();
             }
 
-            //  SQL #3 : Update energy status
+            //  SQL #4 : Update energy status
             {
                 StringBuffer query = new StringBuffer("UPDATE ");
 
