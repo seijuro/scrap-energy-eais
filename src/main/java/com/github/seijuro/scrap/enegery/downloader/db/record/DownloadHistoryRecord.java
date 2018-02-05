@@ -13,13 +13,34 @@ public class DownloadHistoryRecord {
     public enum Status {
         ERROR(-1),
         DOWNLOADING(0),
-        DONE(1);
+        DOWNLOADED(1),
+        DONE(2);
 
         /**
          * Instance Properties
          */
         @Getter
         private final int code;
+
+        /**
+         * implements logical opr, greater than or equal to, >=.
+         *
+         * @param status
+         * @return
+         */
+        public boolean greaterThan(Status status) {
+            return this.code > status.code;
+        }
+
+        /**
+         * implements logical opr, less than or equal to, <=.
+         *
+         * @param status
+         * @return
+         */
+        public boolean lessThan(Status status) {
+            return this.code < status.code;
+        }
 
         /**
          * C'tor
