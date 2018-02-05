@@ -1,15 +1,21 @@
 package com.github.seijuro.scrap.enegery.downloader.db;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Objects;
 
 public class MySQLDBController {
+    private static Logger LOG = LoggerFactory.getLogger(MySQLDBController.class);
+
     static {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -62,13 +68,15 @@ public class MySQLDBController {
             if (StringUtils.isNotEmpty(this.database))  {   sb.append("/").append(this.database);   }
 
             this.connectionString = sb.toString();
+
+            LOG.debug("JDBC Connection string : {}", this.connectionString);
         }
 
         return this.connectionString;
     }
 
-    protected Connection connect() throws SQLException {
-        if (Objects.nonNull(this.conn) ||
+    public Connection connect() throws SQLException {
+        if (Objects.isNull(this.conn) ||
                 this.conn.isClosed()) {
             this.conn = DriverManager.getConnection(getJDBCConnectionString(), this.user, this.passwd);
         }
@@ -76,7 +84,7 @@ public class MySQLDBController {
         return conn;
     }
 
-    protected void close() throws SQLException {
+    public void close() throws SQLException {
         if (Objects.nonNull(this.conn)) {
             if (!this.conn.isClosed()) {
                 this.conn.close();
@@ -95,8 +103,17 @@ public class MySQLDBController {
 
     public void commit() throws SQLException {
         if (Objects.nonNull(this.conn) &&
-                !this.conn.isClosed()) {
+                !this.conn.isClosed() &&
+                !this.conn.getAutoCommit()) {
             this.conn.commit();
+        }
+    }
+
+    public void rollback() throws SQLException {
+        if (Objects.nonNull(this.conn) &&
+                !this.conn.isClosed() &&
+                !this.conn.getAutoCommit()) {
+            this.conn.rollback();
         }
     }
 }

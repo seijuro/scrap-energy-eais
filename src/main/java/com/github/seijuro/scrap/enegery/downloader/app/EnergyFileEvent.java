@@ -30,11 +30,19 @@ public class EnergyFileEvent implements Notification {
     @Getter
     private final EnergyType type;
     @Getter
-    private final String fileId;
+    private final String fileMajorId;
     @Getter
-    private final String fileSubId;
+    private final String fileMinorId;
     @Getter
     private final FileType fileType;
+
+    public String getFileId() {
+        return String.format("%s%s", this.fileMajorId, this.fileMinorId);
+    }
+
+    public int getDateYM() {
+        return year * 100 + month;
+    }
 
     /**
      * C'tor (Builder)
@@ -45,8 +53,8 @@ public class EnergyFileEvent implements Notification {
         this.year = builder.year;
         this.month = builder.month;
         this.type = builder.type;
-        this.fileId = builder.fileId;
-        this.fileSubId = builder.fileSubId;
+        this.fileMajorId = builder.fileId;
+        this.fileMinorId = builder.fileSubId;
         this.fileType = builder.fileType;
     }
 

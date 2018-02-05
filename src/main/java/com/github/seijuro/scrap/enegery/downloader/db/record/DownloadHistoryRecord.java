@@ -3,15 +3,17 @@ package com.github.seijuro.scrap.enegery.downloader.db.record;
 import com.github.seijuro.scrap.enegery.downloader.app.EnergyType;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
+@ToString
 public class DownloadHistoryRecord {
     public enum Status {
-        INIT(0),
-        PROGRESS(1),
-        DONE(2);
+        ERROR(-1),
+        DOWNLOADING(0),
+        DONE(1);
 
         /**
          * Instance Properties
@@ -48,12 +50,19 @@ public class DownloadHistoryRecord {
     /**
      * Instance Properties
      */
+    @Getter
     private final long idx;
+    @Getter
     private final String fileId;
+    @Getter
     private final EnergyType type;
+    @Getter
     private final int dateYM;
+    @Getter
     private final String filepath;
+    @Getter
     private final Status status;
+    @Getter
     private final java.util.Date lastupdate;
 
 
@@ -125,7 +134,7 @@ public class DownloadHistoryRecord {
         public Builder setStatus(int $code) throws IllegalArgumentException {
             this.status = Status.parseInt($code);
 
-            if (Objects.nonNull(this.status)) {
+            if (Objects.isNull(this.status)) {
                 throw new IllegalArgumentException(String.format("Parameter, code, is not valid (code : %d)", $code));
             }
 

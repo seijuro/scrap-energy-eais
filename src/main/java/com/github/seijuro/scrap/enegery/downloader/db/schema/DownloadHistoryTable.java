@@ -12,11 +12,11 @@ public class DownloadHistoryTable {
     public enum Column implements com.github.seijuro.scrap.enegery.downloader.db.Column {
         IDX("idx"),
         FILE_ID("fid"),
-        FILE_TYPE("type"),
+        TYPE("etype"),
         DATE_YM("ym"),
-        FILEPATH("filepath"),
+        FILEPATH("path"),
         STATUS("status"),
-        LAStUPDATE("lastupdate");
+        LASTUPDATE("lastupdate");
 
         @Getter
         private final String name;
