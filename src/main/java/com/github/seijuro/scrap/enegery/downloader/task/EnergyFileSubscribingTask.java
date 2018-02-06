@@ -20,11 +20,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.zip.ZipFile;
 
 public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber implements Runnable {
     /**
@@ -35,11 +37,18 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
 
     private static final String EnergyFileGroupCode = "100";
     private static final String EnergyFileGroupDetailCode = "101";
+    private static final String ZipFileCharsetName = "CP949";
 
     private static final String RequestURL = "http://open.eais.go.kr/opnsvc/opnOpenInfoDownload.do";
     private static final String Referer = "http://open.eais.go.kr/opnsvc/opnSvcOpenInfoView.do";
 
     private static final long DefaultThreadSleepMillis = 120L * DateUtils.MILLIS_PER_SECOND;
+
+
+    private static final Charset getZipFileCharset() {
+        return Charset.forName(ZipFileCharsetName);
+    }
+
 
     /**
      * Request Post Parameter(s)
@@ -125,20 +134,23 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
      */
     @Getter(AccessLevel.PROTECTED)
     private final String downloadDirectory;
+    @Getter(AccessLevel.PROTECTED)
+    private final String unzipDirectory;
     @Setter
     private long looopSleepMillis = DefaultThreadSleepMillis;
 
     /**
      * C'tor
      *
-     * @param $path
+     * @param downDir
+     * @param unzipDir
      */
-    public EnergyFileSubscribingTask(String $path) throws IllegalArgumentException {
-        if (StringUtils.isEmpty($path)) {
-            throw new IllegalArgumentException("Parameter, $param, is an empty string.");
-        }
+    public EnergyFileSubscribingTask(String downDir, String unzipDir) throws IllegalArgumentException {
+        assert StringUtils.isNotEmpty(downDir);
+        assert StringUtils.isNotEmpty(unzipDir);
 
-        this.downloadDirectory = $path.endsWith(File.separator) ? $path : String.format("%s%s", $path, File.separator);
+        this.downloadDirectory = downDir.endsWith(File.separator) ? downDir : String.format("%s%s", downDir, File.separator);
+        this.unzipDirectory = unzipDir.endsWith(File.separator) ? unzipDir : String.format("%s%s", unzipDir, File.separator);
     }
 
     /**
@@ -147,7 +159,17 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
      * @param event
      * @return
      */
-    private DownloadHistoryRecord.Status getDonwloadStatus(AppDBController ctrl, EnergyFileEvent event) {
+    private DownloadHistoryRecord.Status getDownloadHistoryStatus(AppDBController ctrl, EnergyFileEvent event) {
+        DownloadHistoryRecord record = getDownloadHistory(ctrl, event);
+
+        if (Objects.nonNull(record)) {
+            return record.getStatus();
+        }
+
+        return null;
+    }
+
+    private DownloadHistoryRecord getDownloadHistory(AppDBController ctrl, EnergyFileEvent event) {
         assert Objects.nonNull(ctrl) && Objects.nonNull(event);
 
         int dateYM = event.getDateYM();
@@ -158,10 +180,7 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
             if (Objects.nonNull(record)) {
                 DownloadHistoryRecord.Status status = record.getStatus();
 
-                //  assert
-                assert Objects.nonNull(status);
-
-                return status;
+                return record;
             }
         }
         catch (SQLException sqlexcp) {
@@ -280,7 +299,7 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
                             //  Log
                             LOG.debug("{} Downloading file is done ... (at : {})", Tag, destFilepath);
 
-                            affectedRows = ctrl.updateEnergyFileStatus(fileId, DownloadHistoryRecord.Status.DONE.getCode());
+                            affectedRows = ctrl.updateEnergyFileStatus(fileId, DownloadHistoryRecord.Status.DOWNLOADED.getCode());
 
                             //  Log
                             LOG.debug("{} Update 'status' of downloading history from 'INIT' to 'DONE' ... (affected rows : {})", Tag, affectedRows);
@@ -289,7 +308,8 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
 
                             //  Log
                             LOG.debug("{} Commit changes ...", Tag);
-                        } catch (IOException ioexcp) {
+                        }
+                        catch (IOException ioexcp) {
                             ioexcp.printStackTrace();
 
                             //  Log
@@ -321,18 +341,18 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
         return false;
     }
 
-    private boolean unzipEnergyFileIfneeded(AppDBController ctrl, String zipFilepath, String destDirectory) {
-        assert Objects.nonNull(ctrl) && Objects.nonNull(zipFilepath) && Objects.nonNull(zipFilepath);
+    private boolean unzipEnergyFile(AppDBController ctrl, String src, String outDir) {
+        assert Objects.nonNull(ctrl) && Objects.nonNull(src) && Objects.nonNull(outDir);
 
-        if (ZipUtils.isZipFile(Paths.get(zipFilepath))) {
-            
-        }
-        else {
-            //  Log
-            LOG.error("{} File at path({}) is not a zip file. ", Tag);
-        }
+        LOG.debug("src : {}", src);
+        LOG.debug("out directory : {}", outDir);
 
-        return false;
+        Path srcPath = Paths.get(src);
+        Path outPath = Paths.get(outDir);
+
+        ZipUtils.unzip(srcPath, outPath, getZipFileCharset());
+
+        return true;
     }
 
     /**
@@ -351,38 +371,86 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
             //  check event #1
             if (!checkEnergyType(type)) {
                 //  Log
-                LOG.warn("SKIP ... Unknown type ({})", type);
+                LOG.warn("{} SKIP ... Unknown type ({})", Tag, type);
 
                 return;
             }
 
-            DownloadHistoryRecord.Status status = getDonwloadStatus(ctrl, event);
+            DownloadHistoryRecord record = getDownloadHistory(ctrl, event);
+            DownloadHistoryRecord.Status status = Objects.nonNull(record) ? record.getStatus() : null;
+
+            //  Log
+            LOG.debug("Chechking downloading ... ");
 
             if (Objects.isNull(status) ||
                     status.lessThan(DownloadHistoryRecord.Status.DOWNLOADING)) {
-                //  Log
-                LOG.debug("Stop handling event ... (event : {})", event);
-                boolean result;
-
                 //  Step #1. Download
                 if (downloadEnergyFile(ctrl, event)) {
-                    //  Step #2. Unzip
-                    if (unzipEnergyFileIfneeded(ctrl, null, null)) {
+                    //  Log
+                    LOG.debug("{} Downloading energy file is done ... (event : {})", Tag, event);
 
-                    }
-                    else {
-                        //  Log
-                        LOG.error("{} Unzipping file is failed");
-                    }
+                    record = getDownloadHistory(ctrl, event);
+                    status = Objects.nonNull(record) ? record.getStatus() : null;
+
+                    //  Log
+                    LOG.debug("{} Create(or update) download history ... (history : {})", Tag, record);
                 }
                 else {
                     //  Log
                     LOG.error("{} Downloading file for event ({}) failed.", Tag, event);
+
+                    return;
                 }
             }
-            else if (status.lessThan(DownloadHistoryRecord.Status.DONE)) {
-                //  Unzip
-                unzipEnergyFileIfneeded(ctrl, null, null);
+
+            //  Log
+            LOG.debug("Chechking unzipping ... ");
+
+            if (status.lessThan(DownloadHistoryRecord.Status.DONE)) {
+                Path path = Paths.get(record.getFilepath());
+
+                if (Files.exists(path) &&
+                        Files.isReadable(path)) {
+
+                    if (ZipUtils.isZipFile(path)) {
+                        try {
+                            //  Unzip
+                            String outDirectory = String.format("%s%d%s", getUnzipDirectory(), event.getDateYM(), File.separator);
+
+                            DownloadHistoryRecord.Status finalStatus;
+                            if (unzipEnergyFile(ctrl, record.getFilepath(), outDirectory)) {
+                                //  Log
+                                LOG.debug("Unzipping energy file(s) is done successfully ... (filepath : {})", record.getFilepath());
+
+                                finalStatus = DownloadHistoryRecord.Status.DONE;
+                            }
+                            else {
+                                //  Log
+                                LOG.warn("Unzipping energy file(s) failed ... (filepath : {})", record.getFilepath());
+
+                                finalStatus = DownloadHistoryRecord.Status.ERROR;
+                            }
+
+                            ctrl.updateEnergyFileStatus(record.getFileId(), finalStatus.getCode());
+                            ctrl.commit();
+                        }
+                        catch (SQLException sqlexcp) {
+                            sqlexcp.printStackTrace();
+                        }
+                    }
+                    else {
+                        //  Log
+                        LOG.warn("File isn't a zip file ... (filepath : {})", record.getFilepath());
+                    }
+                }
+                else {
+                    //  Log
+                    LOG.warn("File doens't exists or not readable ... (filepath : {})", record.getFilepath());
+                }
+            }
+            else if (status == DownloadHistoryRecord.Status.DONE) {
+                //  Log
+                LOG.debug("{} Downlaoding & Unzipping is already done ... (event : {})", Tag, event);
             }
         }
     }

@@ -30,6 +30,7 @@ public class MainApp {
             String seleniumServerURL = confManager.getSeleniumHubURL();
             String browser = confManager.getBrowserType();
             String downDirectory = confManager.getDownloadDirecotry();
+            String unzipDirectory = confManager.getUnzipDirecotry();
             long publishingMillis = confManager.getPublishingMillis();
             long subscribingMillis = confManager.getSubscribingMillis();
 
@@ -40,7 +41,7 @@ public class MainApp {
             ExecutorService executor = Executors.newFixedThreadPool(2);
 
             EnergyFilePublishingTask publisher = new EnergyFilePublishingTask(seleniumServerURL, browser, EnergyFileSiteURL);
-            EnergyFileSubscribingTask subscriber = new EnergyFileSubscribingTask(downDirectory);
+            EnergyFileSubscribingTask subscriber = new EnergyFileSubscribingTask(downDirectory, unzipDirectory);
 
             publisher.setLoopSleepMillis(publishingMillis);
             subscriber.setLooopSleepMillis(subscribingMillis);

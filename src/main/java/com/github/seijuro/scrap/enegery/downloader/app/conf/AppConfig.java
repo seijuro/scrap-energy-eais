@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.tools.jar.CommandLine;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,9 +19,13 @@ import java.util.Objects;
 public enum AppConfig implements Config {
     HUB_URL("hub.url"),
     BROWSER("browser"),
-    PUBLISHING_MILLIS("publishing.millis"),
-    SUBSCRIBING_MILLIS("subscribing.millis");
+    PUBLISHER_MILLIS("publisher.millis"),
+    SUBSCRIBER_MILLIS("subscriber.millis"),
+    DOWNLOAD_DIR("download.dir"),
+    UNZIP_DIR("unzip.dir");
 
+    /**
+     */
     /**
      * Instance Properties
      */
@@ -37,7 +42,7 @@ public enum AppConfig implements Config {
     }
 
     /**
-     * Class Instance
+     * Class Properties
      */
     private static Logger LOG = LoggerFactory.getLogger(AppConfig.class);
     private static String Tag = "[CONFIG/APP]";
@@ -67,7 +72,9 @@ public enum AppConfig implements Config {
             Map<Config, String> ret = new HashMap<>();
 
             while ((line = br.readLine()) != null) {
-                Object[] parsed = ConfigLineParser.parse(line, AppConfig.values());
+                String trimmed = StringUtils.stripToEmpty(line);
+
+                Object[] parsed = ConfigLineParser.parse(trimmed, AppConfig.values());
 
                 if (Objects.nonNull(parsed) &&
                         parsed.length == 2) {

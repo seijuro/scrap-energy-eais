@@ -36,7 +36,7 @@ public enum DBConfig implements Config{
     }
 
     /**
-     * Class Instance.
+     * Class Properties.
      */
     private static final Logger LOG = LoggerFactory.getLogger(DBConfig.class);
     private static final String Tag = "[CONFIG/DB]";

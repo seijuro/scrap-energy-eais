@@ -20,6 +20,7 @@ public class ConfigManager {
     private static Logger LOG = LoggerFactory.getLogger(ConfigManager.class);
     static final String DefaultConfigDirectoryName = "conf";
     static final String DefaultDownloadDirectoryName = "download";
+    static final String DefaultUnzipDirectoryName = "unzip";
     static final String AppConfigFilename = "app.conf";
     static final String DatabaseConfigFilename = "db.conf";
     static final long DefaultPublishingMillis = 3600000;
@@ -75,8 +76,10 @@ public class ConfigManager {
     }
 
     /**
-     * Application option, 'conf', is not required.
-     * If user didn't specified, this methods would be called to find (default) 'conf' directory.
+     * return 'default' conf direcotry path.
+     *
+     * [[default 'conf' path]]
+     * $HOME/conf
      *
      * @param home
      * @return
@@ -86,14 +89,29 @@ public class ConfigManager {
     }
 
     /**
-     * Application option, 'download', is not required.
-     * If user didn't specified, this method would be called to find (default) 'download' directory.
+     * return 'default' download direcotry path.
+     *
+     * [[default 'download directory path]]
+     * $HOME/download
      *
      * @param home
      * @return
      */
     private String getDefaultDownloadDirectory(String home) {
         return String.format("%s%s%s", home, home.endsWith(File.separator) ? "" : File.separator, DefaultDownloadDirectoryName);
+    }
+
+    /**
+     * return 'default' unzip directory path.
+     *
+     * [[default 'unzip' directory path]]
+     * $HOME/unzip
+     *
+     * @param home
+     * @return
+     */
+    private String getDefaultUnzipDirectory(String home) {
+        return String.format("%s%s%s", home, home.endsWith(File.separator) ? "" : File.separator, DefaultUnzipDirectoryName);
     }
 
     /**
@@ -127,9 +145,8 @@ public class ConfigManager {
     }
 
     /**
-     * retrieve 'download' directory from application options.
-     * If not set, this will return default 'conf' directory path.
-     * Default 'conf' directory path is '$HOME/download'.
+     * retrieve 'download' directory from app config.
+     * If it wans't set, this would return default 'download' directory path.
      *
      * @return
      * @throws NotInitializedException
@@ -137,9 +154,24 @@ public class ConfigManager {
     public String getDownloadDirecotry() throws NotInitializedException {
         throwExceptionIfNotInitialized();
 
-        assert Objects.nonNull(this.appOptions);
+        assert Objects.nonNull(this.appConfigs);
 
-        return this.appOptions.getOrDefault(AppOption.DONWLOAD,  getDefaultDownloadDirectory(getHomeDirectory()));
+        return this.appConfigs.getOrDefault(AppConfig.DOWNLOAD_DIR,  getDefaultDownloadDirectory(getHomeDirectory()));
+    }
+
+    /**
+     * retrieve 'unzip' directory from app config.
+     * If it wans't set, this would return default 'unzip' directory path.
+     *
+     * @return
+     * @throws NotInitializedException
+     */
+    public String getUnzipDirecotry() throws NotInitializedException {
+        throwExceptionIfNotInitialized();
+
+        assert Objects.nonNull(this.appConfigs);
+
+        return this.appConfigs.getOrDefault(AppConfig.UNZIP_DIR,  getDefaultUnzipDirectory(getHomeDirectory()));
     }
 
     /**
@@ -320,10 +352,10 @@ public class ConfigManager {
         assert Objects.nonNull(this.appConfigs);
 
         try {
-            String value = this.appConfigs.get(AppConfig.PUBLISHING_MILLIS);
+            String value = this.appConfigs.get(AppConfig.PUBLISHER_MILLIS);
 
             if (StringUtils.isNotEmpty(value)) {
-                Long.parseLong(value);
+                return Long.parseLong(value);
             }
         }
         catch (NumberFormatException excp) {
@@ -345,10 +377,10 @@ public class ConfigManager {
         assert Objects.nonNull(this.appConfigs);
 
         try {
-            String value = this.appConfigs.get(AppConfig.SUBSCRIBING_MILLIS);
+            String value = this.appConfigs.get(AppConfig.SUBSCRIBER_MILLIS);
 
             if (StringUtils.isNotEmpty(value)) {
-                Long.parseLong(value);
+                return Long.parseLong(value);
             }
         }
         catch (NumberFormatException excp) {
@@ -417,8 +449,7 @@ public class ConfigManager {
 
                 AppOption currentOption = option.getKey();
                 if (currentOption == AppOption.HOME ||
-                        currentOption == AppOption.CONF ||
-                        currentOption == AppOption.DONWLOAD) {
+                        currentOption == AppOption.CONF) {
                     try {
                         Path path = Paths.get(option.getValue());
                         if (!Files.exists(path)) {

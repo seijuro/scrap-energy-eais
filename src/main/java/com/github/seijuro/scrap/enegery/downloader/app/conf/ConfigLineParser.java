@@ -5,11 +5,22 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Objects;
 
 public class ConfigLineParser {
+    /**
+     * Class Properties
+     */
     private static final String AssignementOpr = "=";
+    private static final String CommentOpr = "#";
+
+    static boolean isComment(String line) {
+        return line.startsWith(CommentOpr);
+    }
 
     static Object[] parse(String line, Config[] configs) {
-        if (Objects.nonNull(line)) {
-            String[] tokens = line.split(AssignementOpr, 2);
+        String trimed = StringUtils.stripToEmpty(line);
+
+        if (!isComment(trimed) &&
+                StringUtils.isNotEmpty(trimed)) {
+            String[] tokens = trimed.split(AssignementOpr, 2);
 
             if (tokens.length == 2) {
                 String key = StringUtils.strip(tokens[0]);

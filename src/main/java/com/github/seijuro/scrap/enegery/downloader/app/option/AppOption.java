@@ -10,8 +10,7 @@ import java.util.Objects;
 
 public enum AppOption {
     HOME("h", "home", "(Required) home directory.", true),
-    CONF("c", "conf", "conf direcotry.", false),
-    DONWLOAD("d", "download", "download directory.", false);
+    CONF("c", "conf", "conf direcotry.", false);
 
     /**
      * Instance Properties
@@ -62,18 +61,10 @@ public enum AppOption {
                     .longOpt(AppOption.CONF.getLongName())
                     .desc(AppOption.CONF.getDescription())
                     .build();
-            Option optionDownload = Option.builder(AppOption.DONWLOAD.getShortName())
-                    .required(AppOption.DONWLOAD.isRequired())
-                    .hasArg(true)
-                    .numberOfArgs(1)
-                    .longOpt(AppOption.DONWLOAD.getLongName())
-                    .desc(AppOption.DONWLOAD.getDescription())
-                    .build();
 
             Options options = new Options();
             options.addOption(optionHome);
             options.addOption(optionConf);
-            options.addOption(optionDownload);
 
             CommandLineParser commandLineParser = new DefaultParser();
             CommandLine commandLine = commandLineParser.parse(options, args);
@@ -86,10 +77,6 @@ public enum AppOption {
 
             if (commandLine.hasOption(AppOption.CONF.getShortName())) {
                 ret.put(AppOption.CONF, commandLine.getOptionValue(AppOption.CONF.getShortName()));
-            }
-
-            if (commandLine.hasOption(AppOption.DONWLOAD.getShortName())) {
-                ret.put(AppOption.DONWLOAD, commandLine.getOptionValue(AppOption.DONWLOAD.getShortName()));
             }
 
             return ret;
