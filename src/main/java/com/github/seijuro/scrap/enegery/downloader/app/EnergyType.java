@@ -6,8 +6,8 @@ import lombok.NonNull;
 import java.util.Objects;
 
 public enum EnergyType {
-    ELECTROCITY("전기"),
-    GAS("가스");
+    ELECTROCITY("전기", "elec"),
+    GAS("가스", "gas");
 
     /**
      * Instance Properties
@@ -15,14 +15,18 @@ public enum EnergyType {
     @NonNull
     @Getter
     private final String name;
+    @NonNull @Getter
+    private final String shortName;
 
     /**
      * C'tor
      *
      * @param $name
+     * @param $shortName
      */
-    EnergyType(String $name) {
+    EnergyType(String $name, String $shortName) {
         this.name = $name;
+        this.shortName = $shortName;
     }
 
     public static EnergyType toEnergyTypeIfPossible(String text) {

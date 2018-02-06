@@ -13,15 +13,14 @@ import com.github.seijuro.scrap.enegery.downloader.db.record.DownloadHistoryReco
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -341,6 +340,14 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
         return false;
     }
 
+    /**
+     * unzip energy file into out directory.
+     *
+     * @param ctrl
+     * @param src
+     * @param outDir
+     * @return
+     */
     private boolean unzipEnergyFile(AppDBController ctrl, String src, String outDir) {
         assert Objects.nonNull(ctrl) && Objects.nonNull(src) && Objects.nonNull(outDir);
 
@@ -414,8 +421,7 @@ public class EnergyFileSubscribingTask extends EnergyFileEventSubscriber impleme
 
                     if (ZipUtils.isZipFile(path)) {
                         try {
-                            //  Unzip
-                            String outDirectory = String.format("%s%d%s", getUnzipDirectory(), event.getDateYM(), File.separator);
+                            String outDirectory = String.format("%s%s%s%d%s", getUnzipDirectory(), event.getType().getShortName(), File.separator, event.getYear(), File.separator);
 
                             DownloadHistoryRecord.Status finalStatus;
                             if (unzipEnergyFile(ctrl, record.getFilepath(), outDirectory)) {

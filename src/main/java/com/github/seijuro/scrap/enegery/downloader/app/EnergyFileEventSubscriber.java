@@ -1,9 +1,6 @@
 package com.github.seijuro.scrap.enegery.downloader.app;
 
 import com.github.seijuro.scrap.enegery.downloader.util.Observer;
-import lombok.AccessLevel;
-import lombok.Setter;
-import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +13,6 @@ public class EnergyFileEventSubscriber implements Observer<EnergyFileEvent> {
      */
     private static Logger LOG = LoggerFactory.getLogger(EnergyFileEventSubscriber.class);
     private static final String Tag = "[SUBSCRIBER][ENERGY/FILE]";
-
-    private static final long DefaultThreadSleepMillis = 10L * DateUtils.MILLIS_PER_SECOND;
 
     /**
      * Instance Properties

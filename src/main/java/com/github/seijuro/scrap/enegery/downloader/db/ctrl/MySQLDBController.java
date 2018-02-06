@@ -36,6 +36,7 @@ public class MySQLDBController {
 
     protected Connection conn = null;
     protected String connectionString = null;
+    protected boolean useSSL = false;
 
     /**
      * C'tor #1
@@ -63,6 +64,8 @@ public class MySQLDBController {
             sb.append(this.host);
             if (StringUtils.isNotEmpty(this.port))      {   sb.append(":").append(this.port);   }
             if (StringUtils.isNotEmpty(this.database))  {   sb.append("/").append(this.database);   }
+
+            if (!this.useSSL) sb.append("?useSSL=false");
 
             this.connectionString = sb.toString();
 
